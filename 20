@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Bible Study Reflection</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    .question {
+      margin-bottom: 20px;
+    }
+    input, textarea, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      font-size: 1em;
+    }
+    button {
+      margin-top: 20px;
+      cursor: pointer;
+    }
+    .summary-button {
+      width: auto;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+
+<h1>Bible Study Reflection</h1>
+<div id="app">
+  <div class="question" id="question"></div>
+  <textarea id="answer" rows="5" placeholder="Write your answer here..."></textarea>
+  <button onclick="nextQuestion()">Next</button>
+</div>
+
+<script>
+  const questions = [
+    "1. What scripture did you read today?",
+    "2. In this moment, what did you SEE while reading?",
+    "3. From what you have seen... is there anything you must START/STOP/SUSTAIN doing?",
+    "4. How will you measure that you did it?",
+    "5. What story must you tell yourself to assure that you do it?",
+    "6. Looking at how positive this Bible Study has been, what is the singular lesson about life you are taking from this Stack?",
+    "7. What is the most significant REVELATION, or INSIGHT, that you are leaving this Scripture Study with?",
+    "8. What immediate actions are you committed to taking leaving this stack?",
+    "9. What are you going to title this stack (Scripture and title)?"
+  ];
+
+  let currentQuestion = 0;
+  let answers = [];
+
+  function showQuestion() {
+    document.getElementById('question').innerText = questions[currentQuestion];
+    document.getElementById('answer').value = answers[currentQuestion] || '';
+  }
+
+  function nextQuestion() {
+    const answer = document.getElementById('answer').value.trim();
+    if (answer === '') {
+      alert('Please enter your answer.');
+      return;
+    }
+    answers[currentQuestion] = answer;
+    currentQuestion++;
+
+    if (currentQuestion < questions.length) {
+      showQuestion();
+    } else {
+      showSummary();
+    }
+  }
+
+  function showSummary() {
+    const appDiv = document.getElementById('app');
+    appDiv.innerHTML = '<h2>Your Reflection Summary:</h2>';
+
+    answers.forEach((ans, idx) => {
+      const p = document.createElement('p');
+      p.innerHTML = `<strong>${questions[idx]}</strong><br>${ans}`;
+      appDiv.appendChild(p);
+    });
+
+    // Buttons
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit Answers';
+    editBtn.className = 'summary-button';
+    editBtn.onclick = editAnswers;
+    appDiv.appendChild(editBtn);
+
+    const saveBtn = document.createElement('button');
+    saveBtn.textContent = 'Download Answers';
+    saveBtn.className = 'summary-button';
+    saveBtn.onclick = downloadAnswers;
+    appDiv.appendChild(saveBtn);
+
+    const printBtn = document.createElement('button');
+    printBtn.textContent = 'Print Answers';
+    printBtn.className = 'summary-button';
+    printBtn.onclick = () => window.print();
+    appDiv.appendChild(printBtn);
+  }
+
+  function editAnswers() {
+    currentQuestion = 0;
+    const appDiv = document.getElementById('app');
+    appDiv.innerHTML = `
+      <div class="question" id="question"></div>
+      <textarea id="answer" rows="5" placeholder="Write your answer here..."></textarea>
+      <button onclick="nextQuestion()">Next</button>
+    `;
+    showQuestion();
+  }
+
+  function downloadAnswers() {
+    let content = "Bible Study Reflection:\n\n";
+    answers.forEach((ans, idx) => {
+      content += `${questions[idx]}\n${ans}\n\n`;
+    });
+
+    const blob = new Blob([content], { type: 'text/plain' });
+    const link = document.createElement('a');
+    link.href = URL.createObjectURL(blob);
+    link.download = 'bible-study-reflection.txt';
+    link.click();
+  }
+
+  // Initialize
+  showQuestion();
+</script>
+
+</body>
+</html>
